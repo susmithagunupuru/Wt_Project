@@ -1,0 +1,178 @@
+{
+  "name": "SahayakAI Chat Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "43d1f6dd-5d55-4387-ab53-6f5df73dec49",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -32
+      ],
+      "webhookId": "ad62bcd6-ec00-4433-a97a-b2a41add8a16"
+    },
+    {
+      "parameters": {
+        "functionCode": "const schemes = [\n  { name: \"PM-KISAN\", state: \"All\", benefits: \"₹6000/year\", applyLink: \"https://pmkisan.gov.in\" },\n  { name: \"YSR Rythu Bharosa\", state: \"Andhra Pradesh\", benefits: \"Financial support\", applyLink: \"https://ysrrythubharosa.ap.gov.in\" },\n  { name: \"Pradhan Mantri Awas Yojana\", state: \"All\", benefits: \"Housing subsidy\", applyLink: \"https://pmaymis.gov.in\" },\n  { name: \"MGNREGA\", state: \"All\", benefits: \"100 days wage employment\", applyLink: \"https://nrega.nic.in\" },\n  { name: \"Ayushman Bharat\", state: \"All\", benefits: \"Health coverage ₹5L\", applyLink: \"https://www.pmjay.gov.in\" },\n  { name: \"Rashtriya Krishi Vikas Yojana\", state: \"All\", benefits: \"Farmer support\", applyLink: \"https://rkvy.nic.in\" },\n  { name: \"Sukanya Samriddhi Yojana\", state: \"All\", benefits: \"Girl child savings\", applyLink: \"https://www.sukanyasamriddhi.gov.in\" },\n  { name: \"Mid-Day Meal Scheme\", state: \"All\", benefits: \"School meal\", applyLink: \"https://mdm.nic.in\" },\n  { name: \"PM Ujjwala Yojana\", state: \"All\", benefits: \"LPG subsidy\", applyLink: \"https://pmuy.gov.in\" },\n  { name: \"Telangana State Health Insurance Scheme\", state: \"Telangana\", benefits: \"Medical coverage\", applyLink: \"https://telanganahealth.gov.in\" },\n  { name: \"Tamil Nadu Chief Minister’s Relief Fund\", state: \"Tamil Nadu\", benefits: \"Emergency financial aid\", applyLink: \"https://www.cmrf.tn.gov.in\" },\n  { name: \"Kerala Skill Development Scheme\", state: \"Kerala\", benefits: \"Skill training\", applyLink: \"https://www.keralaskills.com\" },\n  { name: \"Odisha Biju Krushak Kalyan Yojana\", state: \"Odisha\", benefits: \"Farmer health support\", applyLink: \"https://bkkyorissa.nic.in\" },\n  { name: \"Chhattisgarh Farmer Loan Waiver\", state: \"Chhattisgarh\", benefits: \"Loan waiver\", applyLink: \"https://cg.gov.in\" },\n  { name: \"Rajasthan Solar Rooftop Scheme\", state: \"Rajasthan\", benefits: \"Solar subsidy\", applyLink: \"https://energy.rajasthan.gov.in\" },\n  { name: \"Punjab Dairy Development Scheme\", state: \"Punjab\", benefits: \"Dairy support\", applyLink: \"https://punjab.gov.in\" },\n  { name: \"Maharashtra Agricultural Loan Support\", state: \"Maharashtra\", benefits: \"Financial aid\", applyLink: \"https://maharashtra.gov.in\" },\n  { name: \"Haryana Education Scholarship\", state: \"Haryana\", benefits: \"Scholarship for students\", applyLink: \"https://www.haryanaschools.gov.in\" },\n  { name: \"UP Shiksha Protsahan Yojana\", state: \"Uttar Pradesh\", benefits: \"Education support\", applyLink: \"https://up.gov.in\" },\n  { name: \"Bihar Health & Nutrition Scheme\", state: \"Bihar\", benefits: \"Nutrition aid\", applyLink: \"https://state.bihar.gov.in/health\" },\n  { name: \"Assam Tea Garden Workers Welfare\", state: \"Assam\", benefits: \"Worker support\", applyLink: \"https://assam.gov.in\" }\n];\n// const stateMap = {\n//   \"AP\": \"Andhra Pradesh\",\n//   \"TN\": \"Tamil Nadu\",\n//   \"UP\": \"Uttar Pradesh\",\n//   \"MH\": \"Maharashtra\",\n//   // Add all states as needed\n// };\n// const rawState = $json.body?.state?.trim() || \"All\";\n// const state = stateMap[rawState.toUpperCase()] || rawState;\n// // const state = ($json.body?.state || \"All\").trim().toLowerCase();\n\n// const filteredSchemes = schemes.filter(\n//   scheme => scheme.state.toLowerCase() === state || scheme.state === \"All\"\n// );\n\n// return [{ schemes: filteredSchemes }];\nreturn items.map(item => {\nconst state = item.json.body?.state?.trim() || \"All\";\n\n  const filteredSchemes = schemes.filter(\n    scheme => scheme.state.toLowerCase() === state.toLowerCase() || scheme.state === \"All\"\n  );\n\n  return { json: { schemes: filteredSchemes } };\n});"
+      },
+      "id": "430fb3bb-9761-43e8-b10c-a14aa52a3c8b",
+      "name": "Filter Schemes",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// const jobs = [\n//   {\n//     title: \"Data Entry Operator\",\n//     location: \"All\",\n//     skills: [\"basic computer\"]\n//   },\n//   {\n//     title: \"Java Developer Intern\",\n//     location: \"Remote\",\n//     skills: [\"java\"]\n//   }\n// ];\n\n// return [{ jobs }];\nconst schemes = [\n  // Nationwide Schemes\n  { name: \"PM-KISAN\", state: \"All\", benefits: \"₹6000/year to farmers\", applyLink: \"https://pmkisan.gov.in\" },\n  { name: \"Pradhan Mantri Awas Yojana\", state: \"All\", benefits: \"Housing subsidy for eligible citizens\", applyLink: \"https://pmaymis.gov.in\" },\n  { name: \"MGNREGA\", state: \"All\", benefits: \"100 days wage employment\", applyLink: \"https://nrega.nic.in\" },\n  { name: \"Ayushman Bharat\", state: \"All\", benefits: \"Health coverage ₹5L per family\", applyLink: \"https://www.pmjay.gov.in\" },\n  { name: \"Sukanya Samriddhi Yojana\", state: \"All\", benefits: \"Girl child savings scheme\", applyLink: \"https://www.sukanyasamriddhi.gov.in\" },\n  { name: \"PM Ujjwala Yojana\", state: \"All\", benefits: \"LPG subsidy for poor households\", applyLink: \"https://pmuy.gov.in\" },\n  { name: \"SSC CGL & CHSL\", state: \"All\", benefits: \"Central government jobs\", applyLink: \"https://ssc.nic.in/\" },\n  { name: \"IBPS Bank Jobs\", state: \"All\", benefits: \"Bank PO/Clerk recruitment\", applyLink: \"https://www.ibps.in/\" },\n  { name: \"Railway Recruitment Board\", state: \"All\", benefits: \"Railway sector jobs\", applyLink: \"https://indianrailways.gov.in/\" },\n\n  // Andhra Pradesh\n  { name: \"APSSDC (Skill Development)\", state: \"Andhra Pradesh\", benefits: \"Free skill training + placement assistance\", applyLink: \"https://apssdc.in/\" },\n  { name: \"YSR Rythu Bharosa\", state: \"Andhra Pradesh\", benefits: \"Financial support to farmers\", applyLink: \"https://ysrrythubharosa.ap.gov.in/\" },\n  { name: \"APPSC Group 1-4 Recruitment\", state: \"Andhra Pradesh\", benefits: \"State govt jobs\", applyLink: \"https://psc.ap.gov.in/\" },\n  { name: \"AP Police Recruitment\", state: \"Andhra Pradesh\", benefits: \"Constable & SI posts\", applyLink: \"https://www.appolice.gov.in/\" },\n\n  // Tamil Nadu\n  { name: \"TNPSC Group 1-4 Recruitment\", state: \"Tamil Nadu\", benefits: \"State govt jobs\", applyLink: \"https://www.tnpsc.gov.in/\" },\n  { name: \"TN Skill Development Scheme\", state: \"Tamil Nadu\", benefits: \"Skill training for youth\", applyLink: \"https://www.tskills.tn.gov.in/\" },\n  { name: \"TN Health & Education Jobs\", state: \"Tamil Nadu\", benefits: \"Teaching & medical posts\", applyLink: \"https://www.tn.gov.in/\" },\n\n  // Maharashtra\n  { name: \"MPSC State Services\", state: \"Maharashtra\", benefits: \"State government jobs\", applyLink: \"https://www.mpsc.gov.in/\" },\n  { name: \"Maharashtra Agricultural Loan Support\", state: \"Maharashtra\", benefits: \"Financial aid for farmers\", applyLink: \"https://maharashtra.gov.in\" },\n\n  // Uttar Pradesh\n  { name: \"UP Shiksha Protsahan Yojana\", state: \"Uttar Pradesh\", benefits: \"Education support\", applyLink: \"https://up.gov.in\" },\n  { name: \"UP Police Recruitment\", state: \"Uttar Pradesh\", benefits: \"Constable & SI posts\", applyLink: \"https://uppb.gov.in/\" },\n\n  // Telangana\n  { name: \"Telangana State Health Insurance Scheme\", state: \"Telangana\", benefits: \"Medical coverage\", applyLink: \"https://telanganahealth.gov.in\" },\n\n  // Bihar\n  { name: \"Bihar Health & Nutrition Scheme\", state: \"Bihar\", benefits: \"Nutrition aid\", applyLink: \"https://state.bihar.gov.in/health\" },\n\n  // Kerala\n  { name: \"Kerala Skill Development Scheme\", state: \"Kerala\", benefits: \"Skill training programs\", applyLink: \"https://www.keralaskills.com\" },\n\n  // Odisha\n  { name: \"Biju Krushak Kalyan Yojana\", state: \"Odisha\", benefits: \"Farmer health support\", applyLink: \"https://bkkyorissa.nic.in\" },\n\n  // Punjab\n  { name: \"Punjab Dairy Development Scheme\", state: \"Punjab\", benefits: \"Dairy sector support\", applyLink: \"https://punjab.gov.in\" },\n\n  // Chhattisgarh\n  { name: \"Chhattisgarh Farmer Loan Waiver\", state: \"Chhattisgarh\", benefits: \"Loan waiver for farmers\", applyLink: \"https://cg.gov.in\" },\n\n  // Assam\n  { name: \"Assam Tea Garden Workers Welfare\", state: \"Assam\", benefits: \"Worker support\", applyLink: \"https://assam.gov.in\" },\n\n  // Add more states/UTs similarly...\n];\n\nconst state = $json.state || \"All\"; // Can extract from input text if needed\n\nconst filteredSchemes = schemes.filter(scheme => scheme.state === state || scheme.state === \"All\");\n\nreturn [{ schemes: filteredSchemes }];"
+      },
+      "id": "4d70124b-2407-4fe8-a416-a765085d13cf",
+      "name": "Filter Jobs",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        96,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex"
+      },
+      "id": "f6e6cf61-d244-4467-9c66-9ce4e12e7d5e",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"reply\": \"Your AI-generated response here\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "7e0d32ba-8101-4b03-a5b8-58b460adfa52",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyCz52J4nPqDF5_DaxUReKu569qisARMh44",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"You are a helpful assistant for Indian users. User message:{{ $json.body.text }} . User location:{{ $json.body.context }}. Suggest relevant government schemes and jobs. Reply in same language. Keep answer short and simple.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 800000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "f226c2d6-e9df-44bc-a3e7-779f1064b258",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "retryOnFail": false,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Schemes": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Jobs": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Filter Schemes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a191e271f8ab24975736ab4291538d9f78b25af943e9452af354ab9f4b84c1bd"
+  }
+}
