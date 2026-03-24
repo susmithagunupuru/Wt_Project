@@ -4,6 +4,12 @@
 ============================================================ */
 
 /* =============================================================
+   n8n WEBHOOK CONFIG
+   Replace with your own n8n webhook URL before deploying.
+============================================================= */
+const N8N_WEBHOOK_URL = 'http://localhost:5678/webhook/ad62bcd6-ec00-4433-a97a-b2a41add8a16/chat';
+
+/* =============================================================
    DATA
 ============================================================= */
 const SCHEMES = [
@@ -105,6 +111,22 @@ const CHAT_RESPONSES = {
     responses: {
       'pm kisan': "PM కిసాన్‌లో చిన్న రైతులకు సంవత్సరానికి ₹6,000 అందజేస్తారు. pmkisan.gov.in లేదా సమీప CSC కేంద్రంలో దరఖాస్తు చేయండి. 🌾",
       default:    "పీఎం కిసాన్, మనరేగా, గృహ పథకాల గురించి సహాయం చేయగలను. మీకు ఏమి కావాలో చెప్పండి. 😊"
+    }
+  },
+  ta: {
+    welcome: "வணக்கம்! 🙏 நான் RuralSeva AI. அரசு திட்டங்கள் பற்றி உங்களுக்கு உதவுவேன்.",
+    suggestions: ["PM கிசான் விவரங்கள்", "வீட்டு திட்டம்", "MGNREGA பதிவு", "அருகிலுள்ள மருத்துவமனை"],
+    responses: {
+      'pm kisan': "PM கிசான் சிறு விவசாயிகளுக்கு ஆண்டுக்கு ₹6,000 வழங்குகிறது. pmkisan.gov.in அல்லது அருகிலுள்ள CSC மையத்தில் விண்ணப்பிக்கவும். 🌾",
+      default:    "PM கிசான், MGNREGA, வீட்டு திட்டங்கள் பற்றி உதவ முடியும். நீங்கள் என்ன தெரிந்து கொள்ள விரும்புகிறீர்கள்? 😊"
+    }
+  },
+  mr: {
+    welcome: "नमस्कार! 🙏 मी RuralSeva AI आहे. सरकारी योजना बद्दल मी तुम्हाला मदत करेन.",
+    suggestions: ["PM किसान माहिती", "घर योजना", "MGNREGA नोंदणी", "जवळचे रुग्णालय"],
+    responses: {
+      'pm kisan': "PM किसानमध्ये लहान शेतकऱ्यांना वर्षाला ₹6,000 मिळतात. pmkisan.gov.in किंवा जवळच्या CSC केंद्रात अर्ज करा. 🌾",
+      default:    "PM किसान, MGNREGA, घर योजना बद्दल मदत करू शकतो. तुम्हाला काय हवे आहे ते सांगा. 😊"
     }
   }
 };
@@ -654,17 +676,62 @@ function sendChat() {
   input.value = '';
 }
 
-function sendChatText(text) {
+async function fetchN8nReply(userText) {
+  const url = (N8N_WEBHOOK_URL || '').trim();
+  if (!url) throw new Error('n8n webhook URL not configured. Set N8N_WEBHOOK_URL in app.js');
+
+  const payload = {
+    text: userText,
+    lang: chatLang,
+    context: {
+      page: currentPage,
+      source: 'ruralseva-chatbot'
+    }
+  };
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    mode: 'cors'
+  });
+
+  if (!response.ok) {
+    const responseText = await response.text().catch(() => '');
+    throw new Error(`n8n webhook failed ${response.status}: ${response.statusText} ${responseText}`);
+  }
+
+  const data = await response.json().catch(() => null);
+  if (!data || typeof data !== 'object' || !data.reply) {
+    throw new Error('Invalid n8n response; expected JSON with `reply` field');
+  }
+
+  return data.reply;
+}
+
+async function sendChatText(text) {
   addChatMsg('user', text);
   document.getElementById('chatSuggestions').innerHTML = '';
+
   const msgs   = document.getElementById('chatMessages');
   const typing = document.createElement('div');
-  typing.className = 'chat-msg bot'; typing.id = 'typing';
+  typing.className = 'chat-msg bot';
+  typing.id = 'typing';
   typing.innerHTML = '<span class="msg-icon">🌾</span><div class="msg-bubble"><div class="dot-anim"><span></span><span></span><span></span></div></div>';
   msgs.appendChild(typing);
   msgs.scrollTop = msgs.scrollHeight;
-  setTimeout(() => {
+
+  try {
+    const n8nReply = await fetchN8nReply(text);
     document.getElementById('typing')?.remove();
+    addChatMsg('bot', n8nReply);
+    speakText(n8nReply); // Speak the reply
+    renderSuggestions(CHAT_RESPONSES.en.suggestions);
+  } catch (error) {
+    console.error('n8n chatbot error:', error);
+    document.getElementById('typing')?.remove();
+
+    // Fallback to built-in static reply when n8n is unavailable
     const data  = CHAT_RESPONSES[chatLang] || CHAT_RESPONSES.en;
     const lower = text.toLowerCase();
     let reply   = CHAT_RESPONSES.en.responses.default;
@@ -672,9 +739,11 @@ function sendChatText(text) {
     for (const [key, val] of Object.entries(allR)) {
       if (lower.includes(key)) { reply = val; break; }
     }
-    addChatMsg('bot', reply);
+    addChatMsg('bot', `🔁 ${reply}`);
+    speakText(reply); // Speak the fallback reply
     renderSuggestions(CHAT_RESPONSES.en.suggestions);
-  }, 1200);
+    showToast('⚠️ n8n not reachable; using local response fallback.');
+  }
 }
 
 function setChatLang(btn, lang) {
@@ -733,6 +802,26 @@ function toggleMic() {
       .catch(() => showToast('🎤 Microphone permission denied. Allow mic access in browser settings.'));
   } else {
     start();
+  }
+}
+
+/* =============================================================
+   VOICE ASSISTANT — Text-to-Speech
+============================================================= */
+function speakText(text) {
+  console.log('Attempting to speak:', text);
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel(); // Cancel any previous speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = chatLang === 'hi' ? 'hi-IN' : chatLang === 'te' ? 'te-IN' : chatLang === 'ta' ? 'ta-IN' : chatLang === 'mr' ? 'mr-IN' : 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.onstart = () => console.log('Speech started');
+    utterance.onend = () => console.log('Speech ended');
+    utterance.onerror = (e) => console.error('Speech error:', e);
+    speechSynthesis.speak(utterance);
+  } else {
+    console.warn('Text-to-speech not supported in this browser.');
   }
 }
 
