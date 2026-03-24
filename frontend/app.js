@@ -325,7 +325,7 @@ function schemeCardHTML(s) {
       <div class="scheme-card-actions">
         <!-- Apply Now — calls openApplyLink() which validates URL, confirms, then opens in new tab -->
         <button class="btn-apply" onclick="openApplyLink('${safeLink}', '${safeTitle}')">
-          🚀 Apply Now
+           Apply Now
         </button>
         <button class="btn-save ${saved ? 'saved' : ''}" onclick="toggleSave(${s.id},this)" title="Save">${saved ? '★' : '☆'}</button>
       </div>
