@@ -785,17 +785,55 @@ function doLogin() {
   showToast('✅ Welcome back, ' + currentUser.name + '!');
 }
 
-function doRegister() {
-  const name    = document.getElementById('regName').value.trim() || 'New User';
-  const pass    = document.getElementById('regPass').value;
-  const confirm = document.getElementById('regPassConfirm').value;
-  const terms   = document.getElementById('termsCheck').checked;
-  if (!terms) { showToast('⚠️ Please accept the Terms of Service'); return; }
-  if (pass !== confirm) { showToast('⚠️ Passwords do not match'); return; }
-  currentUser = { name, initials: name[0].toUpperCase() };
-  updateAuthUI();
-  closeModal();
-  showToast('🎉 Account created! Welcome, ' + name + '!');
+async function doRegister() {
+  const name = document.getElementById("regName").value;
+  const mobile = document.getElementById("regMobile").value;
+  const state = document.getElementById("regState").value;
+  const occupation = document.getElementById("regOccupation").value;
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPass").value;
+  const confirm = document.getElementById("regPassConfirm").value;
+  const terms = document.getElementById("termsCheck").checked;
+
+  if (!terms) {
+    alert("Please accept Terms");
+    return;
+  }
+
+  if (password !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        mobile,
+        state,
+        occupation,
+        email,
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("✅ Registration Successful");
+      closeModal();
+    } else {
+      alert(data.msg);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
 
 function updateAuthUI() {

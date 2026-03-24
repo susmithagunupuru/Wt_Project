@@ -1,15 +1,25 @@
-# WT_Project Frontend Improvements - TODO
+# Authentication System Implementation TODO
 
-## Plan Progress
-- [x] **Step 1**: Create this TODO.md file ✅
-- [x] **Step 2**: Edit `wt_project/frontend/index.html` 
-  - ✅ Fix CSS link (`style.css` → `./styles.css`)
-  - ✅ Added ARIA label to login button
-  - [ ] Add remaining semantic/meta enhancements (create_file alternative used if needed)
-- [ ] **Step 3**: Test changes (run `npx serve wt_project/frontend` or open index.html)
-- [ ] **Step 4**: Verify functionality (nav, modal, chatbot, eligibility, map, responsive)
-- [ ] **Step 5**: Update TODO.md with completion ✅
-- [ ] **Step 6**: Attempt completion
+## ✅ 1. File Analysis Complete (Done)
+- [x] Verified backend/frontend files
+- [x] Confirmed register route + doRegister() exist  
+- [x] No breaking errors
 
-**Status**: Editing in progress...
+## ✅ 2. Backend Enhancements (In Progress)
+- [x] Update backend/config.js (MONGO_URI, connectDB export) 
+- [x] Create backend/.env 
+- [ ] Enhance backend/routes/auth.js (logs, error handling, /all-users)
+- [ ] Update backend/server.js (CORS origin, use config DB)
+
+## ⏳ 3. Testing (After backend)
+- [ ] npm install (backend)
+- [ ] Start MongoDB
+- [ ] npm run dev
+- [ ] Test POST /api/auth/register (Postman)
+- [ ] Test GET /api/auth/all-users
+- [ ] Frontend register form test
+
+## ⏳ 4. Completion
+- [ ] Verify data in MongoDB Compass
+- [ ] attempt_completion
 
