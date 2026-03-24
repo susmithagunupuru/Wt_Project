@@ -509,7 +509,29 @@
   </div>
 </footer>
 
-<!-- Toast
+<!-- ===== Redirect Confirmation Modal ===== -->
+<div id="redirectModal" class="redirect-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="redirectModalTitle">
+  <div class="redirect-modal">
+    <div class="redirect-modal-header">
+      <div class="redirect-modal-badge">🌿 Government of India</div>
+      <div class="redirect-modal-icon">🏛️</div>
+      <h2 id="redirectModalTitle" class="redirect-modal-title">Official Government Portal</h2>
+    </div>
+    <div class="redirect-modal-body">
+      <p>You are being redirected to an official government website.</p>
+      <div class="redirect-modal-url-chip">
+        <span class="redirect-url-icon">🔗</span>
+        <span id="redirectModalSite" class="redirect-modal-site"></span>
+      </div>
+      <p class="redirect-modal-sub">Do you want to continue?</p>
+    </div>
+    <div class="redirect-modal-actions">
+      <button class="redirect-btn-cancel" onclick="closeRedirectModal()">✕ Cancel</button>
+      <button class="redirect-btn-continue" id="redirectModalConfirm">Continue →</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Toast Notification ===== -->
 <div id="toast" class="toast"></div>
 

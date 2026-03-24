@@ -312,18 +312,21 @@ function schemeCardHTML(s) {
 }
 
 /* =============================================================
-   APPLY LINK — validate URL → confirm dialog → open in new tab
+   APPLY LINK — validate URL → modal confirm → open in new tab
 ============================================================= */
 /**
  * openApplyLink(url, title)
  *  1. Validates the URL is non-empty and well-formed.
- *  2. Shows a confirmation dialog mentioning the scheme title.
- *  3. Opens the official portal in a new tab.
+ *  2. Shows a professional confirmation modal (replaces window.confirm).
+ *  3. Opens the official portal in a new tab on confirmation.
  *  4. If URL is missing or invalid → shows a clear alert.
  *
  * @param {string} url   - applyLink from the scheme/job data object
- * @param {string} title - scheme or job title for the confirm message
+ * @param {string} title - scheme or job title for the toast message
  */
+let _pendingRedirectUrl  = null;
+let _pendingRedirectTitle = null;
+
 function openApplyLink(url, title) {
   // ── Validation: empty or placeholder ──────────────────────
   if (!url || url.trim() === '') {
@@ -341,18 +344,40 @@ function openApplyLink(url, title) {
     return;
   }
 
-  // ── Confirmation dialog before redirect ───────────────────
-  const confirmed = window.confirm(
-    `You are about to visit the official government portal for:\n\n"${title}"\n\n` +
-    `Portal: ${validUrl.hostname}\n\n` +
-    `Click OK to open in a new tab.`
-  );
+  // ── Store pending redirect and populate modal ──────────────
+  _pendingRedirectUrl   = url;
+  _pendingRedirectTitle = title;
+  document.getElementById('redirectModalSite').textContent = validUrl.hostname;
 
-  if (!confirmed) return;
+  // ── Wire up the Continue button for this specific redirect ─
+  // Capture url/title into local vars BEFORE closeRedirectModal() nulls
+  // the globals — otherwise the redirect fires with a null URL.
+  document.getElementById('redirectModalConfirm').onclick = function () {
+    const targetUrl   = _pendingRedirectUrl;
+    const targetTitle = _pendingRedirectTitle;
+    closeRedirectModal();
+    showToast(`🚀 Redirecting to official portal for "${targetTitle}"…`);
+    setTimeout(() => { window.location.href = targetUrl; }, 400);
+  };
 
-  // ── Open official portal in new tab ───────────────────────
-  window.open(url, '_blank', 'noopener,noreferrer');
-  showToast(`🚀 Opening official portal for "${title}"…`);
+  // ── Show the modal ─────────────────────────────────────────
+  const overlay = document.getElementById('redirectModal');
+  overlay.classList.add('open');
+  overlay.addEventListener('click', _redirectOverlayClick);
+}
+
+/** Close the redirect confirmation modal and clean up. */
+function closeRedirectModal() {
+  const overlay = document.getElementById('redirectModal');
+  overlay.classList.remove('open');
+  overlay.removeEventListener('click', _redirectOverlayClick);
+  _pendingRedirectUrl   = null;
+  _pendingRedirectTitle = null;
+}
+
+/** Click-outside-to-dismiss handler for the redirect modal overlay. */
+function _redirectOverlayClick(e) {
+  if (e.target === document.getElementById('redirectModal')) closeRedirectModal();
 }
 
 function toggleSave(id, btn) {
