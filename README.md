@@ -66,20 +66,28 @@ npm install
 cd ../frontend
 ```
 
-### 2. Environment Setup
-Copy `.env.example` to `.env`:
+### 2. Environment Setup ⚠️ SECURITY FIRST
+
+**✅ .env is protected by .gitignore** - Never committed to GitHub!
+
+1. Copy template:
 ```bash
 cd backend
 cp .env.example .env
 ```
 
-**`.env`**:
+2. **EDIT `.env`** with your real values:
 ```
 MONGO_URI=mongodb://127.0.0.1:27017/sahayakai
+# or Atlas: mongodb+srv://user:pass@cluster0.mongodb.net/sahayakai
+
 PORT=5000
-N8N_WEBHOOK_URL=https://your-n8n-webhook.com/chat
-JWT_SECRET=your-super-secret-key
+JWT_SECRET=change-me-to-64-random-characters!!!
+N8N_WEBHOOK_URL=https://your-n8n-webhook-url.com/chat
 ```
+
+**🚨 NEVER commit `.env` - Git will reject it!**
+**✅ Safe to push entire repo to public GitHub now.**
 
 ### 3. Run Development
 ```bash
