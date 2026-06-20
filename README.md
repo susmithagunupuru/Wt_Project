@@ -68,7 +68,7 @@ cd ../frontend
 
 ### 2. Environment Setup ⚠️ SECURITY FIRST
 
-**✅ .env is protected by .gitignore** - Never committed to GitHub!
+**✅ .env is protected by .gitignore** (and should never be committed)
 
 1. Copy template:
 ```bash
@@ -76,18 +76,10 @@ cd backend
 cp .env.example .env
 ```
 
-2. **EDIT `.env`** with your real values:
-```
-MONGO_URI=mongodb://127.0.0.1:27017/sahayakai
-# or Atlas: mongodb+srv://user:pass@cluster0.mongodb.net/sahayakai
+2. **Configure environment variables** using `.env.example` (create a local `.env` locally; do not commit it):
 
-PORT=5000
-JWT_SECRET=change-me-to-64-random-characters!!!
-N8N_WEBHOOK_URL=https://your-n8n-webhook-url.com/chat
-```
-
-**🚨 NEVER commit `.env` - Git will reject it!**
-**✅ Safe to push entire repo to public GitHub now.**
+**🚨 Never commit your local `.env`** (create it locally from `.env.example`).
+**✅ Safe to push the repo to public GitHub.**
 
 ### 3. Run Development
 ```bash
@@ -96,7 +88,7 @@ cd backend
 npm run dev
 
 # Terminal 2: Frontend (VSCode Live Server)
-# Open frontend/index.html (http://127.0.0.1:5500)
+
 
 # Production
 npm start  # Backend only (serves frontend static files)
